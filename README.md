@@ -1,2 +1,2 @@
 # factory-methode
-Decription et exemplement sur le patron de conception Factory Methode
+Description et exemple sur le patron de conception Factory Methode
