@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Rapport - Patron Factory Method - INF461</title>
+<style>
+@page { size: A4; margin: 18mm 19mm 18mm; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #202b3c; font-family: "Segoe UI", Arial, sans-serif; font-size: 10.5pt; line-height: 1.48; }
+h1, h2, h3 { color: #17365d; line-height: 1.2; }
+h1 { font-size: 25pt; margin: 0 0 12pt; }
+h2 { font-size: 17pt; margin: 0 0 13pt; padding-bottom: 6pt; border-bottom: 2px solid #2f75b5; }
+h3 { font-size: 11pt; margin: 12pt 0 5pt; }
+p { margin: 5pt 0 9pt; }
+ul { margin-top: 4pt; }
+.page { page-break-after: always; min-height: 245mm; }
+.page:last-child { page-break-after: auto; }
+.cover { display: flex; flex-direction: column; justify-content: center; }
+.eyebrow { color: #2f75b5; text-transform: uppercase; letter-spacing: 2px; font-size: 10pt; font-weight: 700; }
+.cover h1 { font-size: 36pt; margin-top: 15pt; }
+.subtitle { font-size: 16pt; color: #536579; max-width: 145mm; }
+.rule { width: 35mm; height: 4px; background: #2f75b5; margin: 22pt 0; }
+.identity { margin-top: 30pt; border-left: 3px solid #2f75b5; padding: 8pt 14pt; }
+.muted { color: #63758a; }
+.callout { background: #eef5fb; border-left: 3px solid #2f75b5; padding: 9pt 12pt; margin: 10pt 0; }
+.illustration { display: block; max-width: 100%; max-height: 145mm; margin: 14pt auto 8pt; object-fit: contain; }
+.caption { text-align: center; color: #63758a; font-size: 9pt; }
+.codefile { break-inside: avoid; page-break-inside: avoid; }
+.code { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f5f8; border: 1px solid #d5dce5; border-radius: 4px; padding: 8pt; margin: 4pt 0 8pt; font: 7.3pt/1.26 Consolas, "Courier New", monospace; color: #172338; }
+.link { color: #0563c1; overflow-wrap: anywhere; }
+.footer { border-top: 1px solid #d5dce5; padding-top: 5pt; margin-top: 18pt; color: #8290a1; font-size: 8pt; }
+</style>
+</head>
+<body>
+<section class="page cover">
+  <div class="eyebrow">INF461 · Principes et processus du logiciel</div>
+  <h1>Le patron Factory Method</h1>
+  <div class="rule"></div>
+  <p class="subtitle">Exemple du cours et variante concrète : création de moyens d’envoi de notifications</p>
+  <div class="identity">
+    <p><strong>Étudiant :</strong> Theodore Wilfried Bitjong</p>
+    <p><strong>Matricule :</strong> 23U2331</p>
+    <p><strong>Dépôt GitHub :</strong><br><a class="link" href="https://github.com/inf461-bitjong/factory-method">https://github.com/inf461-bitjong/factory-method</a></p>
+    <p><strong>Organisation GitHub :</strong><br><a class="link" href="https://github.com/inf461-bitjong">https://github.com/inf461-bitjong</a></p>
+  </div>
+  <p class="muted" style="margin-top:35pt">11 novembre 2026</p>
+  <div class="footer">Rapport de devoir · INF461</div>
+</section>
+
+<section class="page">
+  <h2>1. Présentation du patron</h2>
+  <p>Factory Method (fabrique) est un patron de création qui définit une méthode de création permettant aux sous-classes de choisir le type concret de l’objet produit. Le client manipule une abstraction et délègue l’instanciation à une fabrique, plutôt que de construire lui-même chaque produit concret.</p>
+  <h3>Structure générique</h3>
+  <ul>
+    <li><strong>Produit abstrait :</strong> définit l’interface commune des objets créés.</li>
+    <li><strong>Produits concrets :</strong> implémentent cette interface avec des comportements spécialisés.</li>
+    <li><strong>Créateur abstrait :</strong> expose la méthode de création, abstraite ou appelée par une méthode commune.</li>
+    <li><strong>Créateurs concrets :</strong> redéfinissent la méthode de création pour instancier le produit correspondant.</li>
+  </ul>
+  <div class="callout"><strong>Choix du modèle générique.</strong> Le patron Factory Method convient aux deux exemples, car chacun propose plusieurs produits d’une même famille et laisse une fabrique concrète décider du produit instancié. Le client utilise ensuite le type abstrait, sans dépendre des opérations propres à chaque produit.</div>
+  <h3>Application dans ce projet</h3>
+  <p>Dans l’exemple du cours, <code>ProduitFactory</code> fournit <code>getProduit()</code>, qui délègue à <code>createProduit()</code>, redéfinie dans les fabriques concrètes. Dans la variante, <code>NotificationSenderFactory</code> déclare directement <code>createSender()</code>, redéfinie par les fabriques SMS, Email et Push. Dans les deux cas, le client sélectionne explicitement la fabrique concrète utilisée.</p>
+  <div class="footer">Factory Method · Présentation</div>
+</section>
+
+<section class="page">
+  <h2>2. Exemple vu en cours</h2>
+  <p>L’exemple présente une famille de produits abstraits <code>Produit</code>. Les classes <code>ProduitA</code>, <code>ProduitB</code> et <code>ProduitC</code> implémentent la même opération. Le créateur abstrait <code>ProduitFactory</code> définit <code>getProduit()</code>, qui appelle sa méthode de fabrique protégée <code>createProduit()</code>. Chaque fabrique concrète crée un type de produit différent.</p>
+  <h3>Organisation de la solution</h3>
+  <img class="illustration" src="FactoryMethodCours.png" alt="Organisation des classes et fabriques de l'exemple du cours">
+  <p class="caption">Figure 1 — Organisation des produits et fabriques dans l’exemple du cours.</p>
+  <div class="footer">Factory Method · Exemple du cours</div>
+</section>
+
+<section class="page">
+  <h2>3. Implémentation de l’exemple du cours</h2>
+  <p>Les extraits suivants reprennent le code source du dépôt.</p>
+  <div class="codefile"><h3>ClientCours.java</h3><pre class="code">package cours;
+
+import cours.abstractions.Produit;
+import cours.abstractions.ProduitFactory;
+import cours.factories.ProduitFactoryA;
+import cours.factories.ProduitFactoryB;
+import cours.factories.ProduitFactoryC;
+
+public class ClientCours {
+    public static void main(String[] args) {
+        System.out.println(&quot;--- EXEMPLE DU COURS : Factory Method ---&quot;);
+
+        ProduitFactory factoryA = new ProduitFactoryA();
+        ProduitFactory factoryB = new ProduitFactoryB();
+        ProduitFactory factoryC = new ProduitFactoryC();
+
+        Produit produit = factoryA.getProduit();
+        produit.methodeproduit();
+
+        produit = factoryB.getProduit();
+        produit.methodeproduit();
+
+        produit = factoryC.getProduit();
+        produit.methodeproduit();
+    }
+}</pre></div>
+<div class="codefile"><h3>Produit.java</h3><pre class="code">package cours.abstractions;
+
+public abstract class Produit {
+    public abstract void methodeproduit();
+}</pre></div>
+<div class="codefile"><h3>ProduitFactory.java</h3><pre class="code">package cours.abstractions;
+
+public abstract class ProduitFactory {
+    public Produit getProduit() {
+        return createProduit();
+    }
+
+    protected abstract Produit createProduit();
+}</pre></div>
+<div class="codefile"><h3>ProduitFactoryA.java</h3><pre class="code">package cours.factories;
+
+import cours.abstractions.Produit;
+import cours.abstractions.ProduitFactory;
+import cours.models.ProduitA;
+
+public class ProduitFactoryA extends ProduitFactory {
+    @Override
+    protected Produit createProduit() {
+        return new ProduitA();
+    }
+}</pre></div>
+<div class="codefile"><h3>ProduitFactoryB.java</h3><pre class="code">package cours.factories;
+
+import cours.abstractions.Produit;
+import cours.abstractions.ProduitFactory;
+import cours.models.ProduitB;
+
+public class ProduitFactoryB extends ProduitFactory {
+    @Override
+    protected Produit createProduit() {
+        return new ProduitB();
+    }
+}</pre></div>
+<div class="codefile"><h3>ProduitFactoryC.java</h3><pre class="code">package cours.factories;
+
+import cours.abstractions.Produit;
+import cours.abstractions.ProduitFactory;
+import cours.models.ProduitC;
+
+public class ProduitFactoryC extends ProduitFactory {
+    @Override
+    protected Produit createProduit() {
+        return new ProduitC();
+    }
+}</pre></div>
+<div class="codefile"><h3>ProduitA.java</h3><pre class="code">package cours.models;
+
+import cours.abstractions.Produit;
+
+public class ProduitA extends Produit {
+    @Override
+    public void methodeproduit() {
+        System.out.println(&quot;je suis un produit de type A&quot;);
+        System.out.println(&quot;produitA.methodeproduit()&quot;);
+    }
+}</pre></div>
+<div class="codefile"><h3>ProduitB.java</h3><pre class="code">package cours.models;
+
+import cours.abstractions.Produit;
+
+public class ProduitB extends Produit {
+    @Override
+    public void methodeproduit() {
+        System.out.println(&quot;je suis un produit de type B&quot;);
+        System.out.println(&quot;produitB.methodeproduit()&quot;);
+    }
+}</pre></div>
+<div class="codefile"><h3>ProduitC.java</h3><pre class="code">package cours.models;
+
+import cours.abstractions.Produit;
+
+public class ProduitC extends Produit {
+    @Override
+    public void methodeproduit() {
+        System.out.println(&quot;je suis un produit de type C&quot;);
+        System.out.println(&quot;produitC.methodeproduit()&quot;);
+    }
+}</pre></div>
+  <div class="footer">Factory Method · Code source du cours</div>
+</section>
+
+<section class="page">
+  <h2>4. Exemple modifié : notifications</h2>
+  <p>La variante applique le patron à l’envoi de notifications. <code>NotificationSender</code> est l’abstraction des expéditeurs ; les classes <code>EmailSender</code>, <code>SmsSender</code> et <code>PushSender</code> fournissent chacune leur comportement <code>send()</code>. Les fabriques concrètes créent l’expéditeur associé au canal demandé.</p>
+  <h3>Organisation de la solution</h3>
+  <img class="illustration" src="FactoryMethodNotifications.png" alt="Organisation des classes et fabriques de la variante notifications">
+  <p class="caption">Figure 2 — Organisation des expéditeurs et fabriques pour les notifications.</p>
+  <h3>Analyse du choix</h3>
+  <p>Factory Method est adapté, car les canaux de notification constituent une famille de produits substituables derrière l’abstraction <code>NotificationSender</code>. Une nouvelle implémentation peut ajouter un expéditeur et sa fabrique sans modifier les classes déjà présentes. Le client de cette démonstration choisit toutefois chaque fabrique concrète dans son code ; la sélection du canal n’est donc pas encore externalisée.</p>
+  <div class="callout"><strong>Portée de la démonstration :</strong> les implémentations affichent le message sur la sortie standard. Elles illustrent la création polymorphique, mais n’effectuent pas de véritable envoi par courriel, SMS ou notification push.</div>
+  <div class="footer">Factory Method · Variante notifications</div>
+</section>
+
+<section class="page">
+  <h2>5. Implémentation de la variante</h2>
+  <p>Les extraits suivants reprennent le code source du dépôt.</p>
+  <div class="codefile"><h3>ClientVariante.java</h3><pre class="code">package variante;
+
+import variante.abstractions.NotificationSenderFactory;
+import variante.abstractions.NotificationSender;
+import variante.factories.EmailSenderFactory;
+import variante.factories.PushSenderFactory;
+import variante.factories.SmsSenderFactory;
+
+public class ClientVariante {
+    public static void main(String[] args) {
+        System.out.println(&quot;--- EXEMPLE MODIFIE : Factory de Senders de Notification ---&quot;);
+
+        NotificationSenderFactory factorySms = new SmsSenderFactory();
+        NotificationSender smsSender = factorySms.createSender();
+        smsSender.send(&quot;Votre code de validation est 9832&quot;);
+
+        NotificationSenderFactory factoryEmail = new EmailSenderFactory();
+        NotificationSender emailSender = factoryEmail.createSender();
+        emailSender.send(&quot;Bienvenue sur notre application !&quot;);
+
+        NotificationSenderFactory factoryPush = new PushSenderFactory();
+        NotificationSender pushSender = factoryPush.createSender();
+        pushSender.send(&quot;Vous avez un nouveau message.&quot;);
+    }
+}</pre></div>
+<div class="codefile"><h3>NotificationSender.java</h3><pre class="code">package variante.abstractions;
+
+public abstract class NotificationSender {
+    private final String type;
+
+    protected NotificationSender(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public abstract void send(String message);
+}</pre></div>
+<div class="codefile"><h3>NotificationSenderFactory.java</h3><pre class="code">package variante.abstractions;
+
+public abstract class NotificationSenderFactory {
+    public abstract NotificationSender createSender();
+}</pre></div>
+<div class="codefile"><h3>EmailSenderFactory.java</h3><pre class="code">package variante.factories;
+
+import variante.abstractions.NotificationSenderFactory;
+import variante.abstractions.NotificationSender;
+import variante.models.EmailSender;
+
+public class EmailSenderFactory extends NotificationSenderFactory {
+    @Override
+    public NotificationSender createSender() {
+        return new EmailSender();
+    }
+}</pre></div>
+<div class="codefile"><h3>SmsSenderFactory.java</h3><pre class="code">package variante.factories;
+
+import variante.abstractions.NotificationSenderFactory;
+import variante.abstractions.NotificationSender;
+import variante.models.SmsSender;
+
+public class SmsSenderFactory extends NotificationSenderFactory {
+    @Override
+    public NotificationSender createSender() {
+        return new SmsSender();
+    }
+}</pre></div>
+<div class="codefile"><h3>PushSenderFactory.java</h3><pre class="code">package variante.factories;
+
+import variante.abstractions.NotificationSenderFactory;
+import variante.abstractions.NotificationSender;
+import variante.models.PushSender;
+
+public class PushSenderFactory extends NotificationSenderFactory {
+    @Override
+    public NotificationSender createSender() {
+        return new PushSender();
+    }
+}</pre></div>
+<div class="codefile"><h3>EmailSender.java</h3><pre class="code">package variante.models;
+
+import variante.abstractions.NotificationSender;
+
+public class EmailSender extends NotificationSender {
+    public EmailSender() {
+        super(&quot;EMAIL&quot;);
+    }
+
+    @Override
+    public void send(String message) {
+        System.out.println(&quot;[&quot; + getType() + &quot;] Envoi d&#39;un courriel : &quot; + message);
+    }
+}</pre></div>
+<div class="codefile"><h3>SmsSender.java</h3><pre class="code">package variante.models;
+
+import variante.abstractions.NotificationSender;
+
+public class SmsSender extends NotificationSender {
+    public SmsSender() {
+        super(&quot;SMS&quot;);
+    }
+
+    @Override
+    public void send(String message) {
+        System.out.println(&quot;[&quot; + getType() + &quot;] Envoi d&#39;un SMS : &quot; + message);
+    }
+}</pre></div>
+<div class="codefile"><h3>PushSender.java</h3><pre class="code">package variante.models;
+
+import variante.abstractions.NotificationSender;
+
+public class PushSender extends NotificationSender {
+    public PushSender() {
+        super(&quot;PUSH&quot;);
+    }
+
+    @Override
+    public void send(String message) {
+        System.out.println(&quot;[&quot; + getType() + &quot;] Envoi d&#39;une notification push : &quot; + message);
+    }
+}</pre></div>
+  <div class="footer">Factory Method · Code source de la variante</div>
+</section>
+</body>
+</html>
